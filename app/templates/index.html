@@ -6,22 +6,37 @@
 <span class='label label-success'>vs</span>
 <input type="text" id="secondTeam" class="team-input" placeholder="Team"/>
 <hr />
-<a href="#" class="btn btn-success btn-lg">Go</a>
+<a href="#" class="btn btn-success btn-lg" id="go-button">Go</a>
 {% endblock %}
 
 {% block scripts %}
 <script type="text/javascript">
-    $('.team-input').typeahead({
-        ajax: {
-            url: '/teams',
-            triggerLength: 2,
-            preProcess: function (data) {
-                if (data.success === false) {
-                    return false;
-                }
-                return data.items;
+    ajax = {
+        url: '/teams',
+        triggerLength: 2,
+        preProcess: function (data) {
+            if (data.success === false) {
+                return false;
             }
+            return data.items;
         }
+    }
+    firstTeam = 0
+    secondTeam = 0
+    $('#firstTeam').typeahead({
+        onSelect: function(item) {
+            firstTeam = item.value
+        },
+        ajax:ajax
+    });
+    $('#secondTeam').typeahead({
+        onSelect: function(item) {
+            secondTeam = item.value
+        },
+        ajax:ajax
+    });
+    $('#go-button').click(function() {
+        window.open('/' + firstTeam + '/vs/' + secondTeam, '_self', false);
     });
 </script>
 {% endblock %}

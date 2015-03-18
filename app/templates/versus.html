@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content%}
+<h2><img src="{{firstTeam.imageUrl}}" width="50">{{firstTeam.name}} vs {{secondTeam.name}}<img src="{{secondTeam.imageUrl}}"width="50"></h2>
+<hr />
+<table>
+    {% for match in matches %}
+    <tr>
+        <td>
+            <a href="/open/team/{{match.participants[0].team.id}}">
+                {{match.participants[0].team.name}}
+            </a>
+        </td>
+        <td><a href="/open/match/{{match.id}}"><time datetime="{{match.date}}">...</time></a></td>
+        <td>
+            <a href="/open/team/{{match.participants[1].team.id}}">
+                {{match.participants[1].team.name}}
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+{% block scripts %}
+<script src="/static/moment-with-locales.js"></script>
+<script type="text/javascript">
+    $(function() {
+        $('time').each(function() {
+            $(this).html(moment($(this).attr('datetime')).fromNow());
+        });
+    });
+</script>
+{% endblock %}
