@@ -121,19 +121,18 @@ def parseTeam(currentTeamId, once):
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         if sys.argv[1] == 'update':
+            print bcolors.HEADER + 'Updating last matches' + bcolors.ENDC
             for team in models.Team.query.filter(models.Team.imageUrl != None).all():
                 parseTeam(team.id, True)
         else:
+            print bcolors.HEADER + 'Parsing team %s' % (sys.argv[1]) + bcolors.ENDC
             parseTeam(sys.argv[1], ONCE)
-    if len(sys.argv) == 3:
+    elif len(sys.argv) == 3:
         if (sys.argv[1] == 'from'):
+            print bcolors.HEADER + 'Parsing teams from %s' % (sys.argv[2]) + bcolors.ENDC
             for team in models.Team.query.filter(models.Team.imageUrl != None, models.Team.id >= int(sys.argv[2])).all():
                 parseTeam(team.id, ONCE)
     else:
+        print bcolors.HEADER + 'Parsing all teams' + bcolors.ENDC
         for team in models.Team.query.filter(models.Team.imageUrl != None).all():
             parseTeam(team.id, ONCE)
-
-
-
-
-
