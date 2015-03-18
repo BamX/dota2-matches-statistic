@@ -1,9 +1,12 @@
 # Dota2 : Matches Statistic
-Pro-matches statistic for Dota 2. It's small Flask app with a few Python scripts to parse matches data from web. It works with SQLite DB by default.
+Pro-matches statistic for **Dota 2**. It's small **Flask** app with a few **Python** scripts to parse matches data from web. It works with **SQLite** DB by default.
+
+## Requirements
+This app requres **Python 2.7**, **pip** and **virtualenv** to be installed.
 
 ## Installation
 * Download or clone repository
-* Run **./setup.py** 
+* Run **./setup.sh** 
 	* it inits enviroment
 	* it creates DB
 	* it parses heroes and top teams from web
