@@ -9,6 +9,16 @@ ONCE = False
 
 url = "http://www.dotabuff.com/esports/teams/%s/matches?page=%s"
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 def teamSoup(teamId, page):
     teamUrl = url % (teamId, page)
     opener = urllib2.build_opener()
@@ -74,6 +84,7 @@ def parseTeam(currentTeamId):
             for parsedMatch in parseMatches(currentTeamId, page):
                 match = models.Match.query.filter_by(id = parsedMatch['matchId']).first()
                 if match:
+                    print '[%s] Match exists: %s vs %s' % (currentTeamId, team.name, parsedMatch['otherTeamName'])
                     repeatFinded = True
                     if ONCE:
                         break
@@ -82,11 +93,11 @@ def parseTeam(currentTeamId):
                 otherTeam = models.Team.query.filter_by(id = otherTeamId).first()
                 if otherTeam is None:
                     if otherTeamId is None:
-                        print 'Unknown team skipped'
+                        print '[%s] Unknown team skipped' % (currentTeamId)
                         continue
                     otherTeam = models.Team(id = otherTeamId, name = parsedMatch['otherTeamName'])
                     db.session.add(otherTeam)
-                    print 'Team added: %s' % (otherTeam.name)
+                    print bcolors.WARNING + '[%s] Team added: %s' % (currentTeamId, otherTeam.name) + bcolors.ENDC
                 match = models.Match(id = parsedMatch['matchId'], length = parsedMatch['length'], date = parsedMatch['date'])
                 db.session.add(match)
                 heroes = map(lambda heroName: models.Hero.query.filter_by(name = heroName).first(),parsedMatch['heroes'])
@@ -97,13 +108,17 @@ def parseTeam(currentTeamId):
                 opParticipant = models.Participant(team_id = otherTeam.id, match_id = match.id, won = not parsedMatch['won'], heroes = opHeroes)
                 db.session.add(opParticipant)
                 db.session.commit()
-                print 'Match added: %s vs %s' % (team.name, otherTeam.name)
+                print bcolors.OKGREEN + '[%s] Match added: %s vs %s' % (currentTeamId, team.name, otherTeam.name) + bcolors.ENDC
             if repeatFinded and ONCE:
                 break
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         parseTeam(sys.argv[1])
+    if len(sys.argv) == 3:
+        if (sys.argv[1] == 'from'):
+            for team in models.Team.query.filter(models.Team.imageUrl != None, models.Team.id >= int(sys.argv[2])).all():
+                parseTeam(team.id)
     else:
         for team in models.Team.query.filter(models.Team.imageUrl != None).all():
             parseTeam(team.id)
