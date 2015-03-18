@@ -30,7 +30,7 @@ class Participant(db.Model):
     won = db.Column(db.Boolean)
     
     def __repr__(self):
-        return '<Participant %r>' % (self.id)
+        return '<Participant %r>' % (self.team_id)
 
 class Match(db.Model):
     id = db.Column(db.Integer, primary_key = True)
