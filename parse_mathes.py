@@ -21,11 +21,17 @@ class bcolors:
 
 def teamSoup(teamId, page):
     teamUrl = url % (teamId, page)
-    opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-    f = opener.open(teamUrl)
-    html = f.read()
-    f.close()
+    html = ""
+    try:
+        opener = urllib2.build_opener()
+        opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+        f = opener.open(teamUrl)
+        html = f.read()
+        f.close()
+    except urllib2.HTTPError, err:
+        if err.code == 429:
+            print 'Requests limit. Please, wait for a hour or two'
+            exit()
     return BeautifulSoup(html)
 
 def gameTime(str):
@@ -71,7 +77,7 @@ def parseMatches(teamId, page):
     soup = teamSoup(teamId, page)
     return map(parseMatchTR, soup.find_all('tr')[1:])
 
-def parseTeam(currentTeamId):
+def parseTeam(currentTeamId, once):
     team = models.Team.query.filter_by(id = currentTeamId).first()
     pagesCount = 1
     if team:
@@ -86,7 +92,7 @@ def parseTeam(currentTeamId):
                 if match:
                     print '[%s] Match exists: %s vs %s' % (currentTeamId, team.name, parsedMatch['otherTeamName'])
                     repeatFinded = True
-                    if ONCE:
+                    if once:
                         break
                     continue
                 otherTeamId = parsedMatch['otherTeamId']
@@ -109,19 +115,23 @@ def parseTeam(currentTeamId):
                 db.session.add(opParticipant)
                 db.session.commit()
                 print bcolors.OKGREEN + '[%s] Match added: %s vs %s' % (currentTeamId, team.name, otherTeam.name) + bcolors.ENDC
-            if repeatFinded and ONCE:
+            if repeatFinded and once:
                 break
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
-        parseTeam(sys.argv[1])
+        if sys.argv[1] == 'update':
+            for team in models.Team.query.filter(models.Team.imageUrl != None).all():
+                parseTeam(team.id, True)
+        else:
+            parseTeam(sys.argv[1], ONCE)
     if len(sys.argv) == 3:
         if (sys.argv[1] == 'from'):
             for team in models.Team.query.filter(models.Team.imageUrl != None, models.Team.id >= int(sys.argv[2])).all():
-                parseTeam(team.id)
+                parseTeam(team.id, ONCE)
     else:
         for team in models.Team.query.filter(models.Team.imageUrl != None).all():
-            parseTeam(team.id)
+            parseTeam(team.id, ONCE)
 
 
 
