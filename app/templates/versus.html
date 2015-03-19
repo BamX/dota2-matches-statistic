@@ -1,31 +1,52 @@
 {% extends "base.html" %}
 {% block content%}
-<h2><img src="{{firstTeam.imageUrl}}" width="50">{{firstTeam.name}} vs {{secondTeam.name}}<img src="{{secondTeam.imageUrl}}"width="50"></h2>
-<hr />
-<table>
+<style type="text/css">
+    img {
+        background-color: #777;
+        border-radius: 5px;
+        padding: 5px;
+        margin: 15px;
+    }
+</style>
+
+<h2><img src="{{firstTeam.imageUrl}}" width="150"><img src="{{secondTeam.imageUrl}}"width="150"><br/><a href="/open/team/{{firstTeam.id}}">{{firstTeam.name}}</a> vs <a href="/open/team/{{secondTeam.id}}">{{secondTeam.name}}</a></h2>
+<table class="table">
     {% for match in matches %}
     <tr>
         <td>
-            <a href="/open/team/{{match.participants[0].team.id}}">
+            {% if match.participants[0].won %}
+                <span class="label label-success">
+            {% else %}
+                <span class="label label-warning">
+            {% endif %}
                 {{match.participants[0].team.name}}
-            </a>
+            </span>
         </td>
-        <td><a href="/open/match/{{match.id}}"><time datetime="{{match.date}}">...</time></a></td>
+        <td><a href="/open/match/{{match.id}}"><time datetime="{{match.date}}">{{match.date}}</time></a></td>
         <td>
-            <a href="/open/team/{{match.participants[1].team.id}}">
+            {% if match.participants[1].won %}
+                <span class="label label-success">
+            {% else %}
+                <span class="label label-warning">
+            {% endif %}
                 {{match.participants[1].team.name}}
-            </a>
+            </span>
         </td>
     </tr>
     {% endfor %}
 </table>
 {% endblock %}
+
 {% block scripts %}
-<script src="/static/moment-with-locales.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
 <script type="text/javascript">
     $(function() {
         $('time').each(function() {
-            $(this).html(moment($(this).attr('datetime')).fromNow());
+            var date = new Date($(this).attr('datetime') + " UTC");
+            var m = moment(date.toString());
+            $(this).html(m.fromNow());
+            $(this).attr('title', m.calendar());
+            $(this).attr('datetime', date.toString());
         });
     });
 </script>

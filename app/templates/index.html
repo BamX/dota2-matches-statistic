@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 {% block content%}
+<style type="text/css">
+    span {
+        margin: 15px;
+    }
+</style>
+
 <h2>Choose teams</h2>
 <hr />
 <input type="text" id="firstTeam" class="team-input" placeholder="Team"/>
@@ -7,9 +13,11 @@
 <input type="text" id="secondTeam" class="team-input" placeholder="Team"/>
 <hr />
 <a href="#" class="btn btn-success btn-lg" id="go-button">Go</a>
+
 {% endblock %}
 
 {% block scripts %}
+<script src="/static/bootstrap-typeahead.min.js"></script>
 <script type="text/javascript">
     ajax = {
         url: '/teams',
