@@ -38,15 +38,25 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script>
 <script type="text/javascript">
+    function momentForTime (timeTag) {
+        var date = new Date(timeTag.attr('datetime') + " UTC");
+        return moment(date.toString());
+    }
+
     $(function() {
+        //TODO: add localization. moment.locale('ru');
         $('time').each(function() {
-            var date = new Date($(this).attr('datetime') + " UTC");
-            var m = moment(date.toString());
-            $(this).html(m.fromNow());
-            $(this).attr('title', m.calendar());
-            $(this).attr('datetime', date.toString());
+            $(this).html(momentForTime($(this)).fromNow());
+        });
+        $('time').on({
+            mouseenter: function () {
+                $(this).html(momentForTime($(this)).calendar());
+            },
+            mouseleave: function () {
+                $(this).html(momentForTime($(this)).fromNow());
+            }
         });
     });
 </script>

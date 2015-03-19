@@ -46,5 +46,6 @@ def versus(firstTeamId, secondTeamId):
         join(p1alias, models.Match.participants).\
         join(p2alias, models.Match.participants).\
         filter(p1alias.team_id == firstTeamId).\
-        filter(p2alias.team_id == secondTeamId)
+        filter(p2alias.team_id == secondTeamId).\
+        order_by(models.Match.date.desc())
     return render_template('versus.html', matches = matches, firstTeam = firstTeam, secondTeam = secondTeam)
