@@ -2,7 +2,7 @@ from flask import jsonify, abort, request, make_response, render_template, redir
 from app import app, auth, db, models
 from sqlalchemy.orm import aliased
 
-BASE_URL = "http://www.dotabuff.com/"
+BASE_URL = "http://www.dotabuff.com"
 
 def allTeams(fameous):
     query = models.Team.query
