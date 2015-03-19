@@ -34,6 +34,8 @@ def getTeams():
 
 @app.route('/<int:firstTeamId>/vs/<int:secondTeamId>')
 def versus(firstTeamId, secondTeamId):
+    if firstTeamId == secondTeamId:
+        abort(404)
     firstTeam = models.Team.query.filter_by(id = firstTeamId).first_or_404()
     secondTeam = models.Team.query.filter_by(id = secondTeamId).first_or_404()
 
